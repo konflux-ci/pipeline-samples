@@ -16,6 +16,10 @@ spec:
       name: NAMESPACE
       default: default
       type: string
+    - description: Duration to wait for bundle installation to complete before failing.
+      name: INSTALL_TIMEOUT
+      default: 5m
+      type: string
   tasks:
     - name: parse-metadata
       taskRef:
@@ -104,11 +108,15 @@ spec:
           value: "$(tasks.parse-metadata.results.component-container-image)"
         - name: namespace
           value: "$(params.NAMESPACE)"
+        - name: installTimeout
+          value: "$(params.INSTALL_TIMEOUT)"
       taskSpec:
         params:
           - name: bundleImage
             type: string
           - name: namespace
+            type: string
+          - name: installTimeout
             type: string
         volumes:
           - name: credentials
@@ -144,4 +152,6 @@ spec:
               - bundle
               - --namespace
               - "$(params.namespace)"
+              - --timeout
+              - "$(params.installTimeout)"
               - "$(params.bundleImage)"
